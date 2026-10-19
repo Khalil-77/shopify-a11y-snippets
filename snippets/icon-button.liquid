@@ -1,0 +1,55 @@
+{%- comment -%}
+  Icon button: an icon-only button with a proper accessible name and a
+  minimum 44x44px target.
+  WCAG 4.1.2 Name, Role, Value, 2.5.8 Target Size (Minimum), 1.4.11 Non-text Contrast
+
+  Usage (capture your theme's icon first, since render can't take a
+  snippet name from a variable):
+    {%- capture cart_icon -%}{% render 'icon-cart' %}{%- endcapture -%}
+    {% render 'icon-button', label: 'Open cart', icon: cart_icon %}
+
+  Accepts:
+  - label: accessible name, required (e.g. 'Open search')
+  - icon: the icon's SVG markup (captured, as above)
+  - class: extra classes (optional)
+  - attributes: extra HTML attributes as a string (optional)
+
+  The icon is hidden from assistive technology so it is not announced twice.
+{%- endcomment -%}
+
+<button
+  type="button"
+  class="a11y-icon-button {{ class }}"
+  aria-label="{{ label | escape }}"
+  {{ attributes }}
+>
+  <span class="a11y-icon-button__icon" aria-hidden="true">
+    {{- icon -}}
+  </span>
+</button>
+
+<style>
+  .a11y-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .a11y-icon-button svg {
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+  }
+
+  .a11y-icon-button:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+</style>

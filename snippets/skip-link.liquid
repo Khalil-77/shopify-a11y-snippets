@@ -1,0 +1,46 @@
+{%- comment -%}
+  Skip link: lets keyboard and screen reader users jump past the header.
+  WCAG 2.4.1 Bypass Blocks, 2.4.7 Focus Visible
+
+  Usage (first element inside <body> in layout/theme.liquid):
+    {% render 'skip-link', target: 'MainContent' %}
+
+  The target element needs a matching id and tabindex="-1", e.g.:
+    <main id="MainContent" tabindex="-1">
+
+  Accepts:
+  - target: id of the main content element (default: 'MainContent')
+  - label: link text (default: 'Skip to content')
+{%- endcomment -%}
+
+{%- liquid
+  assign skip_target = target | default: 'MainContent'
+  assign skip_label = label | default: 'Skip to content'
+-%}
+
+<a class="a11y-skip-link" href="#{{ skip_target }}">{{ skip_label }}</a>
+
+<style>
+  .a11y-skip-link {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 9999;
+    padding: 0.75rem 1rem;
+    background: #ffffff;
+    color: #121212;
+    font-weight: 600;
+    text-decoration: underline;
+    transform: translateY(-200%);
+  }
+
+  .a11y-skip-link:focus {
+    transform: translateY(0);
+    outline: 3px solid #121212;
+    outline-offset: 2px;
+  }
+
+  #{{ skip_target }}:focus {
+    outline: none;
+  }
+</style>

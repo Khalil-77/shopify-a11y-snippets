@@ -1,0 +1,74 @@
+{%- comment -%}
+  Accessible price: gives screen reader users the meaning that sighted users
+  get from strikethrough and color (regular vs. sale price).
+  WCAG 1.3.1 Info and Relationships
+
+  Usage:
+    {% render 'a11y-price', product: product %}
+    {% render 'a11y-price', variant: product.selected_or_first_available_variant %}
+
+  Screen reader output for a sale item:
+    "Sale price $40.00, Regular price $60.00"
+
+  Accepts:
+  - product: a product object (uses its selected or first available variant)
+  - variant: a variant object (takes priority over product)
+{%- endcomment -%}
+
+{%- liquid
+  if variant
+    assign target = variant
+  else
+    assign target = product.selected_or_first_available_variant
+  endif
+
+  assign on_sale = false
+  if target.compare_at_price > target.price
+    assign on_sale = true
+  endif
+-%}
+
+<div class="a11y-price">
+  {%- if on_sale -%}
+    <span class="a11y-price__sale">
+      <span class="visually-hidden">Sale price</span>
+      {{ target.price | money }}
+    </span>
+    <s class="a11y-price__regular">
+      <span class="visually-hidden">Regular price</span>
+      {{ target.compare_at_price | money }}
+    </s>
+  {%- else -%}
+    <span class="a11y-price__current">
+      <span class="visually-hidden">Price</span>
+      {{ target.price | money }}
+    </span>
+  {%- endif -%}
+
+  {%- if target.unit_price_measurement -%}
+    <span class="a11y-price__unit">
+      <span class="visually-hidden">Unit price</span>
+      {{ target.unit_price | money }}
+      <span aria-hidden="true">/</span>
+      <span class="visually-hidden">per</span>
+      {%- if target.unit_price_measurement.reference_value != 1 -%}
+        {{ target.unit_price_measurement.reference_value }}
+      {%- endif -%}
+      {{ target.unit_price_measurement.reference_unit }}
+    </span>
+  {%- endif -%}
+</div>
+
+<style>
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
